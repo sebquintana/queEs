@@ -29,10 +29,16 @@ public class Objeto extends Actor
         try {
             imagen = new GreenfootImage(numeroImagen+".png");
             setImage(imagen);
-        } catch (IllegalArgumentException e) {
-            getWorld().addObject(new Ganaste(), 540, 408);
-            Greenfoot.stop();
+        } catch (IllegalArgumentException e) {        
+            e.printStackTrace();
         }
 
+    }
+
+    public void mostrarVictoria() {
+        Greenfoot.playSound("victoria.wav");
+        getWorld().addObject(new Ganaste(), 540, 408);
+        Greenfoot.delay(100);
+        Greenfoot.stop();
     }
 }

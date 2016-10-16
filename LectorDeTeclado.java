@@ -6,23 +6,28 @@ public class LectorDeTeclado extends Actor
     private static final int MAX_INPUT_LENGTH = 30;
     private String text = "";
     private String[] soluciones;
-    int nivel;
+    private int nivel;
+    private boolean[] objetosAdivinados;
+    private int aciertos;
 
     public LectorDeTeclado() {
         updateImage();
         text = "";
         Respuestas respuestas = new Respuestas();
         soluciones =  respuestas.leerRespuestas();
+        inicializarVectorObjetosAdivinados();
     }
 
     public void act(){
 
+        ganar();
+
         // Pasar a la sieguiente imagen
         siguiente();
-        
-         // Pasar a la imagen anterior
+
+        // Pasar a la imagen anterior
         anterior();
-        
+
         String key = Greenfoot.getKey();
         if (key == null){ 
             return;
@@ -52,12 +57,13 @@ public class LectorDeTeclado extends Actor
 
     public void siguiente(){
         Siguiente siguiente = getWorld().getObjects(Siguiente.class).get(0);
-        if(Greenfoot.mouseClicked(siguiente)){
+        if(Greenfoot.mouseClicked(siguiente) && soluciones.length > nivel + 1){
             nivel++;
             Objeto objeto = getWorld().getObjects(Objeto.class).get(0);
             objeto.setImagen(nivel);
             Nivel nivelObject = getWorld().getObjects(Nivel.class).get(0);
             nivelObject.setImagen(nivel+1);
+            mostrarPalabraAdivinada();
         }
     }
 
@@ -69,9 +75,10 @@ public class LectorDeTeclado extends Actor
             objeto.setImagen(nivel);
             Nivel nivelObject = getWorld().getObjects(Nivel.class).get(0);
             nivelObject.setImagen(nivel+1);
+            mostrarPalabraAdivinada();
         }
     }
-    
+
     private void updateImage() {
         GreenfootImage image = new GreenfootImage(15*MAX_INPUT_LENGTH, 60);
         image.setColor(Color.black);
@@ -92,9 +99,41 @@ public class LectorDeTeclado extends Actor
                 i++;
             }
             getWorld().addObject(new Correcto(), 858, 520);
+            Greenfoot.playSound("acierto.wav");
+            objetosAdivinados[nivel] = true;
+            aciertos++;
         } else {
             getWorld().addObject(new Error(), 858, 520);
+            Greenfoot.playSound("error.wav");
+            objetosAdivinados[nivel] = false;
         }
 
+    }
+
+    public void mostrarPalabraAdivinada() {
+
+        if(objetosAdivinados[nivel]){
+            text = soluciones[nivel];
+        } else {
+            text = "";
+        }
+        updateImage();
+    }
+
+    public void inicializarVectorObjetosAdivinados(){
+
+        objetosAdivinados = new boolean[soluciones.length];
+
+        for(int i = 0; i < objetosAdivinados.length; i++){
+            objetosAdivinados[i] = false;
+        }
+
+    }
+
+    public void ganar(){
+        if(soluciones.length == aciertos){
+            Objeto objeto = getWorld().getObjects(Objeto.class).get(0);
+            objeto.mostrarVictoria(); 
+        }
     }
 }
