@@ -15,7 +15,7 @@ public class Error extends Actor
         
         tiempo++;
         
-        if(tiempo == 100){
+        if(tiempo == 80){
             getWorld().removeObject(this);
         }
     }    
