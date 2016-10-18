@@ -84,6 +84,7 @@ public class LectorDeTeclado extends Actor
     }
 
     private void updateImage(Color colorFondoImagen) {
+
         GreenfootImage image = new GreenfootImage(15*MAX_INPUT_LENGTH, 60);
         image.setColor(Color.black);
         image.fill();
@@ -92,6 +93,11 @@ public class LectorDeTeclado extends Actor
         GreenfootImage textImage = new GreenfootImage(text.toUpperCase(), 24, Color.black, null);
         image.drawImage(textImage, (image.getWidth()-textImage.getWidth())/2, (image.getHeight()-textImage.getHeight())/2);
         setImage(image);
+        
+        if(colorFondoImagen == Color.red){
+            Greenfoot.delay(100);
+            colorFondo = Color.white;
+        }
     }
 
     public void acertar() {
