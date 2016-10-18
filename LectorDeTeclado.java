@@ -9,9 +9,12 @@ public class LectorDeTeclado extends Actor
     private int nivel;
     private boolean[] objetosAdivinados;
     private int aciertos;
+    private Color colorFondo;
 
     public LectorDeTeclado() {
-        updateImage();
+
+        colorFondo = Color.white;
+        updateImage(Color.white);
         text = "";
         Respuestas respuestas = new Respuestas();
         soluciones =  respuestas.leerRespuestas();
@@ -33,10 +36,9 @@ public class LectorDeTeclado extends Actor
             return;
         }
         // Confirmar palabra
-        if ("enter".equals(key) && text.length() > 0) {
+        if ("enter".equals(key) && text.length() > 0 && !objetosAdivinados[nivel]) {
             acertar();
-            text = "";
-            updateImage();
+            updateImage(colorFondo);
             return;
         }
 
@@ -52,13 +54,14 @@ public class LectorDeTeclado extends Actor
         if (key.length() == 1 && text.length() < MAX_INPUT_LENGTH) text += key;
 
         // actualizar texto
-        updateImage();
+        updateImage(colorFondo);
     }
 
     public void siguiente(){
         Siguiente siguiente = getWorld().getObjects(Siguiente.class).get(0);
         if(Greenfoot.mouseClicked(siguiente) && soluciones.length > nivel + 1){
             nivel++;
+            colorFondo = Color.white;
             Objeto objeto = getWorld().getObjects(Objeto.class).get(0);
             objeto.setImagen(nivel);
             Nivel nivelObject = getWorld().getObjects(Nivel.class).get(0);
@@ -71,6 +74,7 @@ public class LectorDeTeclado extends Actor
         Anterior anterior = getWorld().getObjects(Anterior.class).get(0);
         if(Greenfoot.mouseClicked(anterior) && nivel > 0){
             nivel--;
+            colorFondo = Color.white;
             Objeto objeto = getWorld().getObjects(Objeto.class).get(0);
             objeto.setImagen(nivel);
             Nivel nivelObject = getWorld().getObjects(Nivel.class).get(0);
@@ -79,11 +83,11 @@ public class LectorDeTeclado extends Actor
         }
     }
 
-    private void updateImage() {
+    private void updateImage(Color colorFondoImagen) {
         GreenfootImage image = new GreenfootImage(15*MAX_INPUT_LENGTH, 60);
         image.setColor(Color.black);
         image.fill();
-        image.setColor(Color.white);
+        image.setColor(colorFondoImagen);
         image.fillRect(3, 3, image.getWidth()-6, 54);
         GreenfootImage textImage = new GreenfootImage(text.toUpperCase(), 24, Color.black, null);
         image.drawImage(textImage, (image.getWidth()-textImage.getWidth())/2, (image.getHeight()-textImage.getHeight())/2);
@@ -102,10 +106,13 @@ public class LectorDeTeclado extends Actor
             Greenfoot.playSound("acierto.wav");
             objetosAdivinados[nivel] = true;
             aciertos++;
+            colorFondo = Color.green;
         } else {
             getWorld().addObject(new Error(), 858, 520);
             Greenfoot.playSound("error.wav");
             objetosAdivinados[nivel] = false;
+            text = "";
+            colorFondo = Color.red;
         }
 
     }
@@ -117,7 +124,7 @@ public class LectorDeTeclado extends Actor
         } else {
             text = "";
         }
-        updateImage();
+        updateImage(colorFondo);
     }
 
     public void inicializarVectorObjetosAdivinados(){
